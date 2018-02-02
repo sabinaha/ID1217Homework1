@@ -63,6 +63,8 @@ int main(int argc, char *argv[]) {
   long l; /* use long in case of a 64-bit system */
   pthread_attr_t attr;
   pthread_t workerid[MAXWORKERS];
+  maxIndex.value = LONG_MIN;
+  minIndex.value = LONG_MAX;
 
   /* set global thread attributes */
   pthread_attr_init(&attr);
@@ -152,12 +154,16 @@ void *Worker(void *arg) {
   }
   //LOCK
   pthread_mutex_lock(&lock);
-  maxIndex.value = max_index.value;
-  maxIndex.i = max_index.i;
-  maxIndex.j = max_index.j;
-  minIndex.value = min_index.value;
-  minIndex.i = min_index.i;
-  minIndex.j = min_index.j;
+  if(max_index.value > maxIndex.value){
+    maxIndex.value = max_index.value;
+    maxIndex.i = max_index.i;
+    maxIndex.j = max_index.j;
+  }
+  if(min_index.value < minIndex.value){
+    minIndex.value = min_index.value;
+    minIndex.i = min_index.i;
+    minIndex.j = min_index.j;
+  }
   sum += total;
   pthread_mutex_unlock(&lock);
   //UNLOCK
