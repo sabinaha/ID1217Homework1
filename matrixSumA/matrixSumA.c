@@ -163,10 +163,9 @@ void *Worker(void *arg) {
     compiledMin.value = LONG_MAX;
 
     total = 0;
-    for (i = 0; i < numWorkers; i++)
-    total += sums[i];
 
     for (i = 0; i < numWorkers; i++) {
+      total += sums[i];
       if (max_indices[i].value > compiledMax.value) {
         compiledMax.value = max_indices[i].value;
         compiledMax.i = max_indices[i].i;
