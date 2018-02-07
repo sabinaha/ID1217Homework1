@@ -152,21 +152,25 @@ void *Worker(void *arg) {
       }
     }
   }
-  //LOCK
   pthread_mutex_lock(&lock);
+  sum += total;
+  pthread_mutex_unlock(&lock);
+
   if(max_index.value > maxIndex.value){
+    pthread_mutex_lock(&lock);
     maxIndex.value = max_index.value;
     maxIndex.i = max_index.i;
     maxIndex.j = max_index.j;
+    pthread_mutex_unlock(&lock);
   }
+
   if(min_index.value < minIndex.value){
+    pthread_mutex_lock(&lock);
     minIndex.value = min_index.value;
     minIndex.i = min_index.i;
     minIndex.j = min_index.j;
+    pthread_mutex_unlock(&lock);
   }
-  sum += total;
-  pthread_mutex_unlock(&lock);
-  //UNLOCK
 
   pthread_exit(NULL);
 }
