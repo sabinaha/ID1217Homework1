@@ -158,31 +158,31 @@ void *Worker(void *arg) {
   sums[myid] = total;
   Barrier();
   if (myid == 0) {
-    Index compiledMax, compiledMin;
-    compiledMax.value = LONG_MIN;
-    compiledMin.value = LONG_MAX;
+    Index globalMax, globalMin;
+    globalMax.value = LONG_MIN;
+    globalMin.value = LONG_MAX;
 
     total = 0;
 
     for (i = 0; i < numWorkers; i++) {
       total += sums[i];
-      if (max_indices[i].value > compiledMax.value) {
-        compiledMax.value = max_indices[i].value;
-        compiledMax.i = max_indices[i].i;
-        compiledMax.j = max_indices[i].j;
+      if (max_indices[i].value > globalMax.value) {
+        globalMax.value = max_indices[i].value;
+        globalMax.i = max_indices[i].i;
+        globalMax.j = max_indices[i].j;
       }
-      if (min_indices[i].value < compiledMin.value) {
-        compiledMin.value = min_indices[i].value;
-        compiledMin.i = min_indices[i].i;
-        compiledMin.j = min_indices[i].j;
+      if (min_indices[i].value < globalMin.value) {
+        globalMin.value = min_indices[i].value;
+        globalMin.i = min_indices[i].i;
+        globalMin.j = min_indices[i].j;
       }
     }
     /* get end time */
     end_time = read_timer();
     /* print results */
     printf("\nThe total is %d\n", total);
-    printf("Max value: %ld (%ld %ld)\n", compiledMax.value, compiledMax.i, compiledMax.j);
-    printf("Min value: %ld (%ld %ld)\n", compiledMin.value, compiledMin.i, compiledMin.j);
+    printf("Max value: %ld (%ld %ld)\n", globalMax.value, globalMax.i, globalMax.j);
+    printf("Min value: %ld (%ld %ld)\n", globalMin.value, globalMin.i, globalMin.j);
     printf("\nThe execution time is %g sec\n", end_time - start_time);
   }
 }
