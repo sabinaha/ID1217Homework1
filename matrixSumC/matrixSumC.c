@@ -22,7 +22,10 @@ a.out size numWorkers
 #define MAXSIZE 10000  /* maximum matrix size */
 #define MAXWORKERS 10   /* maximum number of workers */
 
-pthread_mutex_t lock;     /*Lock*/
+pthread_mutex_t sumLock;     /*Lock*/
+pthread_mutex_t maxLock;
+pthread_mutex_t minLock;
+pthread_mutex_t rowLock;
 int numWorkers;           /* number of workers */
 
 typedef struct {
@@ -68,7 +71,10 @@ int main(int argc, char *argv[]) {
   pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 
   /* initialize mutex variable */
-  pthread_mutex_init(&lock, NULL);
+  pthread_mutex_init(&sumLock, NULL);
+  pthread_mutex_init(&maxLock, NULL);
+  pthread_mutex_init(&minLock, NULL);
+  pthread_mutex_init(&rowLock, NULL);
 
   /* read command line args if any */
   size = (argc > 1)? atoi(argv[1]) : MAXSIZE;
@@ -143,9 +149,9 @@ void *Worker(void *arg) {
     max_index.value = LONG_MIN;
     total = 0;
 
-    pthread_mutex_lock(&lock);
+    pthread_mutex_lock(&rowLock);
     row = nextRow++;
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_unlock(&rowLock);
     if(nextRow > size){
       break;
     }
@@ -165,23 +171,23 @@ void *Worker(void *arg) {
     }
 
 
-    pthread_mutex_lock(&lock);
+    pthread_mutex_lock(&sumLock);
     sum += total;
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_unlock(&sumLock);
 
     if(max_index.value > maxIndex.value){
-      pthread_mutex_lock(&lock);
+      pthread_mutex_lock(&maxLock);
         maxIndex.value = max_index.value;
         maxIndex.i = max_index.i;
         maxIndex.j = max_index.j;
-      pthread_mutex_unlock(&lock);
+      pthread_mutex_unlock(&maxLock);
     }
     if(min_index.value < minIndex.value){
-      pthread_mutex_lock(&lock);
+      pthread_mutex_lock(&minLock);
         minIndex.value = min_index.value;
         minIndex.i = min_index.i;
         minIndex.j = min_index.j;
-      pthread_mutex_unlock(&lock);
+      pthread_mutex_unlock(&minLock);
     }
   }
 

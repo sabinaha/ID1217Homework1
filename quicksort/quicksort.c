@@ -146,8 +146,8 @@ int main(int argc, char *argv[]) {
   }
 
   #ifdef DEBUG
-  printf("Unsorted array: \n");
-  printArray(ans);
+    printf("Unsorted array: \n");
+    printArray(ans);
   #endif
 
   //Create the arguments for the first worker
@@ -164,8 +164,8 @@ int main(int argc, char *argv[]) {
   printf("Execution time: %f\n", end_time - start_time);
 
   #ifdef DEBUG
-  printf("Sorted array:\n");
-  printArray(ans);
+    printf("Sorted array:\n");
+    printArray(ans);
   #endif
 
   free(ans);

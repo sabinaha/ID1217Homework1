@@ -24,7 +24,9 @@ a.out size numWorkers
 
 int numWorkers;           /* number of workers */
 int numArrived = 0;       /* number who have arrived */
-pthread_mutex_t lock;     /*Lock*/
+pthread_mutex_t sumLock;     /*Lock*/
+pthread_mutex_t maxLock;
+pthread_mutex_t minLock;
 
 typedef struct {
   long value;
@@ -71,7 +73,9 @@ int main(int argc, char *argv[]) {
   pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 
   /* initialize mutex variable */
-  pthread_mutex_init(&lock, NULL);
+  pthread_mutex_init(&sumLock, NULL);
+  pthread_mutex_init(&maxLock, NULL);
+  pthread_mutex_init(&minLock, NULL);
 
   /* read command line args if any */
   size = (argc > 1)? atoi(argv[1]) : MAXSIZE;
@@ -109,7 +113,7 @@ int main(int argc, char *argv[]) {
   /* Get end time */
   end_time = read_timer();
 
-  printf("\nThe total time id %ld", sum);
+  printf("\nThe total %ld", sum);
   printf("\nMax: %ld (%ld %ld)\nMin: %ld (%ld %ld)\n", maxIndex.value, maxIndex.i, maxIndex.j, minIndex.value, minIndex.i, minIndex.j);
   printf("\nThe execution time is %g sec\n", end_time - start_time);
 
@@ -152,24 +156,24 @@ void *Worker(void *arg) {
       }
     }
   }
-  pthread_mutex_lock(&lock);
+  pthread_mutex_lock(&sumLock);
   sum += total;
-  pthread_mutex_unlock(&lock);
+  pthread_mutex_unlock(&sumLock);
 
   if(max_index.value > maxIndex.value){
-    pthread_mutex_lock(&lock);
+    pthread_mutex_lock(&maxLock);
     maxIndex.value = max_index.value;
     maxIndex.i = max_index.i;
     maxIndex.j = max_index.j;
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_unlock(&maxLock);
   }
 
   if(min_index.value < minIndex.value){
-    pthread_mutex_lock(&lock);
+    pthread_mutex_lock(&minLock);
     minIndex.value = min_index.value;
     minIndex.i = min_index.i;
     minIndex.j = min_index.j;
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_unlock(&minLock);
   }
 
   pthread_exit(NULL);
